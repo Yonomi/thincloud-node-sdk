@@ -1,0 +1,17 @@
+{
+  "name": "@yonomi/thincloud-device-sdk",
+  "version": "0.0.1",
+  "description": "Yonomi thincloud AWS connector",
+  "author": {
+    "name": "Yonomi (http://yonomi.co)"
+  },
+  "main": "src/thincloud-device-sdk.js",
+  "dependencies": {
+    "mqtt": "1.8.0",
+    "aws-iot-device-sdk": "1.0.12",
+    "body-parser": "^1.4.3",
+    "request": "*",
+    "aws4": "*",
+    "uuid": "*"
+  }
+}
