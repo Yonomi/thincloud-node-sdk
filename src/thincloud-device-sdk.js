@@ -1,10 +1,8 @@
 'use strict';
 
 const awsIot = require('aws-iot-device-sdk');
-const MessageProcessor = require('./../utils/messageProcessor');
-const Utils = require('../utils');
-const {RegistrationTopic, RequestTopic, CommandTopic} = require('../utils/topicBuilder');
-const RequestManager = require('../utils/requestManager.js');
+const Utils = require('./utils');
+const {RegistrationTopic, RequestTopic, CommandTopic} = require('./utils/topicBuilder');
 
 class Client {
 
@@ -47,7 +45,7 @@ class Client {
       else this._self = awsIot.thingShadow(this._config);
 
       //set a processor to filter the messages
-      const messageProcessor = new MessageProcessor(this);
+      const messageProcessor = new Utils.MessageProcessor(this);
       this._self.on('message', (topic, payload) => {
         messageProcessor.process(topic, payload);
       });
@@ -67,7 +65,7 @@ class Client {
 
     this._self.subscribe(commissionTopic.response);
 
-    return new RequestManager(commissionTopic, commissionRequest, this, this.getCommissionTimeout())
+    return new Utils.RequestManager(commissionTopic, commissionRequest, this, this.getCommissionTimeout())
       .sync()
       .then((data) => {
         this._self.subscribe(new RequestTopic(this.deviceId).response);
@@ -79,12 +77,12 @@ class Client {
   get request(){
     return {
       async : (method, params) => {
-        let request = new Utils.Request(method, params);
-        return new RequestManager(new RequestTopic(this.deviceId, request.id), request, this).async()
+        const request = new Utils.Request(method, params);
+        return new Utils.RequestManager(new RequestTopic(this.deviceId, request.id), request, this).async()
       },
       sync : (method, params, duration) => {
-        let request = new Utils.Request(method, params);
-        return new RequestManager(new RequestTopic(this.deviceId, request.id), request, this, duration || this.getRequestTimeout()).sync()
+        const request = new Utils.Request(method, params);
+        return new Utils.RequestManager(new RequestTopic(this.deviceId, request.id), request, this, duration || this.getRequestTimeout()).sync()
       }
     }
   }
