@@ -7,5 +7,6 @@ module.exports = {
   Command: require('./command'),
   Request: require('./request'),
   Message: require('./message'),
+  MessageProcessor: require('./messageProcessor'),
   Timer: require('./timer')
 };
