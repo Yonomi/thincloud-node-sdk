@@ -6,6 +6,7 @@ module.exports = {
   TopicBuilder: require('./topicBuilder'),
   Command: require('./command'),
   Request: require('./request'),
+  RequestManager: require('./requestManager'),
   Message: require('./message'),
   MessageProcessor: require('./messageProcessor'),
   Timer: require('./timer')
