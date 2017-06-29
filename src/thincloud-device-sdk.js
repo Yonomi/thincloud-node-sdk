@@ -3,6 +3,7 @@
 const awsIot = require('aws-iot-device-sdk');
 const Utils = require('./utils');
 const {RegistrationTopic, RequestTopic, CommandTopic} = require('./utils/topicBuilder');
+const log = require('./utils').Logger
 
 class Client {
 
@@ -38,11 +39,21 @@ class Client {
   }
 
   init() {
+    log.info('initialize aws-iot connector');
     return new Promise((resolve, reject)=>{
-      if (!this._config) throw new Error('configuration data not set. Can\'t connect to aws');
+      if (!this._config) {
+        log.info('can\'t connect to AWS because no configuration data was provided');
+        throw new Error('configuration data not set. Can\'t connect to aws');
+      }
 
-      if(!this._config.shadow) this._self = awsIot.device(this._config);
-      else this._self = awsIot.thingShadow(this._config);
+      if(!this._config.shadow) {
+        log.info('connect to AWS as a device');
+        this._self = awsIot.device(this._config);
+      }
+      else {
+        log.info('connect to AWS as a thingshadow');
+        this._self = awsIot.thingShadow(this._config);
+      }
 
       //set a processor to filter the messages
       const messageProcessor = new Utils.MessageProcessor(this);
@@ -66,7 +77,7 @@ class Client {
     this._self.subscribe(commissionTopic.response);
 
     return new Utils.RequestManager(commissionTopic, commissionRequest, this, this.getCommissionTimeout())
-      .sync()
+      .rpc()
       .then((data) => {
         this._self.subscribe(new RequestTopic(this.deviceId).response);
         this._self.subscribe(new CommandTopic(this.deviceId).request);
@@ -76,19 +87,19 @@ class Client {
 
   get request(){
     return {
-      async : (method, params) => {
+      publish : (method, params) => {
         const request = new Utils.Request(method, params);
-        return new Utils.RequestManager(new RequestTopic(this.deviceId, request.id), request, this).async()
+        return new Utils.RequestManager(new RequestTopic(this.deviceId, request.id), request, this).publish()
       },
-      sync : (method, params, duration) => {
+      rpc : (method, params, duration) => {
         const request = new Utils.Request(method, params);
-        return new Utils.RequestManager(new RequestTopic(this.deviceId, request.id), request, this, duration || this.getRequestTimeout()).sync()
+        return new Utils.RequestManager(new RequestTopic(this.deviceId, request.id), request, this, duration || this.getRequestTimeout()).rpc()
       }
     }
   }
 
   //TODO: work in progress, need to abstact publish and subscribe as promises
-  // Need to respect the exisisting function signautre with support of callback and promise
+  // Need to respect the existing function signature with support of callback and promise
   // add an event log
   publish(topic, payload, opts, cb){
     return new Promise((resolve, reject)=>{

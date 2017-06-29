@@ -9,5 +9,6 @@ module.exports = {
   RequestManager: require('./requestManager'),
   Message: require('./message'),
   MessageProcessor: require('./messageProcessor'),
-  Timer: require('./timer')
+  Timer: require('./timer'),
+  Logger: require('./logger')
 };

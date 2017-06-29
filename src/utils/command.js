@@ -2,6 +2,7 @@
 
 const {CommandTopic} = require('./topicBuilder');
 const Message = require('./message');
+const log = require('./logger');
 
 class Command {
   constructor(command, client){
@@ -28,6 +29,7 @@ class Command {
 
   error(payload){
     return new Promise((resolve, reject)=> {
+      log.info('publish a msg error');
       this._client.eventSource.publish(this._topic.response, new Message(this.id, payload, 'error', 400).toString(), (err)=> {
         if(err) reject(err);
         else resolve()
@@ -41,13 +43,19 @@ class Command {
 
   validate(request, client) {
     if(!request) {
-      return client.eventSource.emit('error', new Message(this.id, {message: 'json can not be empty'}, 'error', 400).toJSON());
+      log.info(`receive a command with an error: json can not be empty`);
+      client.eventSource.emit('error', new Message(this.id, {message: 'json can not be empty'}, 'error', 400).toJSON());
+      return this.error(JSON.stringify(`{message: 'json can not be empty'}`));
     }
     if(request && !request.id) {
-      return client.eventSource.emit('error', new Message(this.id, {message: 'id can not be empty'}, 'error', 400).toJSON());
+      log.info(`receive a command with an error: id can not be empty`);
+      client.eventSource.emit('error', new Message(this.id, {message: 'id can not be empty'}, 'error', 400).toJSON());
+      return this.error(JSON.stringify(`{message: 'id can not be empty'}`));
     }
     if(request && !request.method) {
-      return client.eventSource.emit('error', new Message(this.id, {message: 'method can not be empty'}, 'error', 400).toJSON());
+      log.info(`receive a command with an error: method can not be empty`);
+      client.eventSource.emit('error', new Message(this.id, {message: 'method can not be empty'}, 'error', 400).toJSON());
+      return this.error(JSON.stringify(`{message: 'method can not be empty'}`));
     }
   }
 

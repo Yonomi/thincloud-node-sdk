@@ -14,7 +14,7 @@ class Manager {
     this.topic = topic;
   }
 
-  async(){
+  publish(){
     return new Promise((resolve, reject)=>{
       this._eventsource.publish(new RequestTopic(this._client.deviceId).request, this.request.toString(), (err)=>{
         if(err) reject(err);
@@ -25,7 +25,7 @@ class Manager {
     });
   }
 
-  sync(){
+  rpc(){
     return new Promise((resolve, reject)=>{
 
       this.addListener(new Listener('error', (err) => {

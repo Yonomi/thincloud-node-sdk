@@ -65,32 +65,32 @@ init the commissioning device, will return a promise to continue working
 client.init()
 ```
 
-to request a device two can use two options, synchronous (which uses the timeout)
+to request a device two can use two options, rpc (which uses the timeout and wait for a response)
 
 ```
-client.request.sync(method, payload)
+client.request.rpc(method, payload)
 ```
 
 Example:
 
 ```
-client.request.sync('get', [{data: {"hello": "world"}}])
+client.request.rpc('get', [{data: {"hello": "world"}}])
     .then((data)=>console.log(data), (err)=> console.log(err));
 }, (err)=>{
   console.log(err);
 });
 ```
 
-and asynchronous (don't use the timeout )
+and asynchronous (don't use the timeout and not wait for a response)
 
 ```
-client.request.async(method, payload)
+client.request.publish(method, payload)
 ```
 
 Example:
 
 ```
-client.request.async('get', []).then(data => console.log(data), err => console.log(err));
+client.request.publish('get', []).then(data => console.log(data), err => console.log(err));
 ```
 
 
