@@ -39,7 +39,7 @@ class MessageProcessor {
 
     if (_topic.type === Constants.Topic.DEVICE && _topic.action === Constants.Topic.DEVICE_REQUEST) {
       log.info({eventType : 'emit', topic : _topic, data : json, listener : Constants.DeviceEvents.DEVICE_REQUEST});
-      log.info({eventType : 'emit', topic : _topic, data : json, listener : `${Constants.DeviceEvents.DEVICE_REQUEST}/${json.id}`);
+      log.info({eventType : 'emit', topic : _topic, data : json, listener : `${Constants.DeviceEvents.DEVICE_REQUEST}/${json.id}`});
       this.eventSource.emit(Constants.DeviceEvents.DEVICE_REQUEST, json);
       this.eventSource.emit(`${Constants.DeviceEvents.DEVICE_REQUEST}/${json.id}`, json);
     }
@@ -51,8 +51,7 @@ class MessageProcessor {
         this.eventSource.emit(Constants.DeviceEvents.DEVICE_COMMAND, command);
       } catch(err){
         log.error({eventType: 'command', topic : _topic, data: err})
-      };
-
+      }
     }
   }
 }
