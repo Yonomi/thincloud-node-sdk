@@ -27,26 +27,27 @@ class Client {
     return this._deviceId;
   }
 
-  set deviceId(id){
+  set deviceId(id) {
     this._deviceId = id;
   }
 
   getCommissionTimeout() {
     return !this.config.timeoutCommission ? Utils.Constants.defaults.timeout : this.config.timeoutCommission;
   }
+
   getRequestTimeout() {
     return !this.config.timeoutRequest ? Utils.Constants.defaults.timeout : this.config.timeoutRequest;
   }
 
   init() {
     log.info('initialize aws-iot connector');
-    return new Promise((resolve, reject)=>{
+    return new Promise((resolve, reject) => {
       if (!this._config) {
         log.info('can\'t connect to AWS because no configuration data was provided');
         throw new Error('configuration data not set. Can\'t connect to aws');
       }
 
-      if(!this._config.shadow) {
+      if (!this._config.shadow) {
         log.info('connect to AWS as a device');
         this._self = awsIot.device(this._config);
       }
@@ -61,7 +62,7 @@ class Client {
         messageProcessor.process(topic, payload);
       });
 
-      this._self.on('connect', ()=>{
+      this._self.on('connect', () => {
         this._commissioningDevice().then(resolve, reject);
       });
 
@@ -72,7 +73,12 @@ class Client {
 
   _commissioningDevice() {
     const commissionTopic = new RegistrationTopic(`${this.config.deviceType}_${this.config.physicalId}`);
-    const commissionRequest = new Utils.Request('commission', [{data : {deviceType: this.config.deviceType, physicalId: this.config.physicalId}}]);
+    const commissionRequest = new Utils.Request('commission', [{
+      data: {
+        deviceType: this.config.deviceType,
+        physicalId: this.config.physicalId
+      }
+    }]);
 
     this._self.subscribe(commissionTopic.response);
 
@@ -85,13 +91,13 @@ class Client {
       });
   }
 
-  get request(){
+  get request() {
     return {
-      publish : (method, params) => {
+      publish: (method, params) => {
         const request = new Utils.Request(method, params);
         return new Utils.RequestManager(new RequestTopic(this.deviceId, request.id), request, this).publish()
       },
-      rpc : (method, params, duration) => {
+      rpc: (method, params, duration) => {
         const request = new Utils.Request(method, params);
         return new Utils.RequestManager(new RequestTopic(this.deviceId, request.id), request, this, duration || this.getRequestTimeout()).rpc()
       }
@@ -101,17 +107,17 @@ class Client {
   //TODO: work in progress, need to abstact publish and subscribe as promises
   // Need to respect the existing function signature with support of callback and promise
   // add an event log
-  publish(topic, payload, opts, cb){
-    return new Promise((resolve, reject)=>{
-      this._self.publish(topic, payload, opts || null, (err)=>{
-        if(err) reject(err);
+  publish(topic, payload, opts, cb) {
+    return new Promise((resolve, reject) => {
+      this._self.publish(topic, payload, opts || null, (err) => {
+        if (err) reject(err);
         else resolve()
       })
     })
   }
 
   //TODO: write abstraction for subscribe;
-  subscribe(topic, opts, cb){
+  subscribe(topic, opts, cb) {
 
   }
 

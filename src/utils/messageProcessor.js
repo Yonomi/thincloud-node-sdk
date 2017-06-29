@@ -44,6 +44,21 @@ class MessageProcessor {
 
     if (_topic.type === Constants.Topic.DEVICE && _topic.action === Constants.Topic.DEVICE_COMMAND) {
       log.info(`will emit a device command event`);
+      /*
+       TODO: the command object passed into the event on next line needs to be wrapped in try catch before we pass it
+       TODO: to the event emitter. also, need to change the command, so that rather then sending a message there, we are
+       TODO: going to throw the error from the command.js if the validation failed and catch here then send an error instead
+       */
+      // // something like this
+      // try {
+      //// the real deal is that the command show throw an error when its initialized as an object that it failed validation
+      //   let command = new Command(json, this._client);
+      //   this.eventSource.emit(Constants.DeviceEvents.DEVICE_COMMAND, new Command(json, this._client));
+      // } catch (ex => {
+      //   this.eventSource.emit('error', {}.toString());
+      // });
+
+
       this.eventSource.emit(Constants.DeviceEvents.DEVICE_COMMAND, new Command(json, this._client));
     }
   }
