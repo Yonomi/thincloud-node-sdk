@@ -43,7 +43,7 @@ class Client {
     log.info('initialize aws-iot connector');
     return new Promise((resolve, reject) => {
       if (!this._config) {
-        log.info('can\'t connect to AWS because no configuration data was provided');
+        log.error('can\'t connect to AWS because no configuration data was provided');
         throw new Error('configuration data not set. Can\'t connect to aws');
       }
 

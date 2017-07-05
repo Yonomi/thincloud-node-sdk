@@ -50,7 +50,7 @@ class MessageProcessor {
         log.info({eventType : 'emit', listener : Constants.DeviceEvents.DEVICE_COMMAND, data : json});
         this.eventSource.emit(Constants.DeviceEvents.DEVICE_COMMAND, command);
       } catch(err){
-        log.error({eventType: 'command', topic : _topic.toString(), data: err})
+        log.error({eventType: 'command', topic : _topic.toString(), err: err})
       }
     }
   }
