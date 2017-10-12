@@ -72,13 +72,14 @@ class Client {
   }
 
   _commissioningDevice() {
-    const commissionTopic = new RegistrationTopic(`${this.config.deviceType}_${this.config.physicalId}`);
     const commissionRequest = new Utils.Request('commission', [{
       data: {
         deviceType: this.config.deviceType,
         physicalId: this.config.physicalId
       }
     }]);
+    const commissionTopic = new RegistrationTopic(`${this.config.deviceType}_${this.config.physicalId}`, commissionRequest.id);
+
 
     this._self.subscribe(commissionTopic.response);
 
