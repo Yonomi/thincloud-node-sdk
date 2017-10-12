@@ -53,6 +53,11 @@ class MessageProcessor {
         log.error({eventType: 'command', topic : _topic.toString(), err: err})
       }
     }
+
+    else {
+      log.info({eventType : 'emit', listener : _topic.toString(), data : json});
+      this.eventSource.emit(_topic.toString(), json);
+    }
   }
 }
 

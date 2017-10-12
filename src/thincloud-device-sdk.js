@@ -118,11 +118,36 @@ class Client {
 
   //TODO: write abstraction for subscribe;
   subscribe(topic, opts, cb) {
+    return new Promise((resolve, reject) => {
+      if(topic === '' || topic === null) {
+        log.error({eventType : 'subscribe', topic : 'topic', data : opts});
+        this.disconnect();
+        throw new Error('subscriptionFailure', 'subscriptionFailure')
+      }
+
+      this._self.subscribe(topic, opts, (err) => {
+        if(err) {
+          log.error({eventType : 'subscribe', topic : 'topic', data : opts});
+          this.disconnect();
+          throw new Error('subscriptionFailure')
+        } else {
+          log.info({eventType : 'subscribe', topic : 'topic', data : opts});
+          resolve();
+        }
+      })
+    })
+
+
 
   }
 
-  disconnect() {
-    this._self.end();
+  disconnect(opts) {
+    return new Promise((resolve, reject) => {
+      this._self.end(opts, (err,data)=>{
+        if(err) reject(err);
+        else resolve()
+      });
+    })
   };
 
 }
