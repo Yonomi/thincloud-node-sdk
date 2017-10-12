@@ -39,7 +39,7 @@ class RegistrationTopic extends TopicBuilder {
   }
 
   get eventPath(){
-    return Constants.Topic.SUBSCRIPTION;
+    return `${Constants.Topic.SUBSCRIPTION}/${this.requestId}`;
   }
 
 }

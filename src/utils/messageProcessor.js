@@ -34,14 +34,14 @@ class MessageProcessor {
     if (_topic.type === Constants.Topic.REGISTRATION) {
       this._client.deviceId = json && json.result ? json.result.deviceId : null;
       log.info({eventType : 'emit', listener : Constants.DeviceEvents.DEVICE_SUBSCRIPTION, data : json});
-      this.eventSource.emit(Constants.DeviceEvents.DEVICE_SUBSCRIPTION, json);
+      this.eventSource.emit(`${Constants.DeviceEvents.DEVICE_SUBSCRIPTION}/${_topic.requestId}`, json);
     }
 
     if (_topic.type === Constants.Topic.DEVICE && _topic.action === Constants.Topic.DEVICE_REQUEST) {
       log.info({eventType : 'emit', listener : Constants.DeviceEvents.DEVICE_REQUEST, data : json});
       this.eventSource.emit(Constants.DeviceEvents.DEVICE_REQUEST, json);
       log.info({eventType : 'emit', listener : `${Constants.DeviceEvents.DEVICE_REQUEST}/${json.id}`, data : json});
-      this.eventSource.emit(`${Constants.DeviceEvents.DEVICE_REQUEST}/${json.id}`, json);
+      this.eventSource.emit(`${Constants.DeviceEvents.DEVICE_REQUEST}/${_topic.requestId}`, json);
     }
 
     if (_topic.type === Constants.Topic.DEVICE && _topic.action === Constants.Topic.DEVICE_COMMAND) {
