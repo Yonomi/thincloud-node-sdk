@@ -3,12 +3,13 @@
 const awsIot = require('aws-iot-device-sdk');
 const Utils = require('./utils');
 const {RegistrationTopic, RequestTopic, CommandTopic} = require('./utils/topicBuilder');
-const log = require('./utils').Logger
+const log = require('./utils').Logger;
 
 class Client {
 
   constructor(config) {
     this._config = config;
+    this._relatedDevices = [];
   }
 
   get eventSource() {
@@ -63,34 +64,47 @@ class Client {
       });
 
       this._self.on('connect', () => {
-        this._commissioningDevice().then(resolve, reject);
+        this.commission(this.config).then(resolve, reject);
       });
 
-      this._self.on('error', reject)
+      this._self.on('error', (err) => {
+        console.log('init error', err)
+      })
 
     });
   }
 
-  _commissioningDevice() {
-    const commissionRequest = new Utils.Request('commission', [{
-      data: {
-        deviceType: this.config.deviceType,
-        physicalId: this.config.physicalId
-      }
-    }]);
-    const commissionTopic = new RegistrationTopic(`${this.config.deviceType}_${this.config.physicalId}`, commissionRequest.id);
 
+  commission(deviceInfo, opts) {
 
-    this._self.subscribe(commissionTopic.response);
+    if(!opts) opts = {};
+    opts.retry = true;
 
-    return new Utils.RequestManager(commissionTopic, commissionRequest, this, this.getCommissionTimeout())
-      .rpc()
-      .then((data) => {
-        this._self.subscribe(new RequestTopic(this.deviceId).response);
-        this._self.subscribe(new CommandTopic(this.deviceId).request);
-        return data;
-      });
+    let _retryCount = opts.retryCount || 10;
+
+    let _commission = () => {
+      const commissionRequest = new Utils.Request('commission', [{
+        data: {
+          deviceType: deviceInfo.deviceType,
+          physicalId: deviceInfo.physicalId
+        }
+      }]);
+      const commissionTopic = new RegistrationTopic(`${deviceInfo.deviceType}_${deviceInfo.physicalId}`, commissionRequest.id);
+
+      return new Utils.RequestManager(commissionTopic, commissionRequest, this, this.getCommissionTimeout())
+        .rpc()
+        .then((data) => {
+          this._self.subscribe(new CommandTopic(this.deviceId).request);
+          return data;
+        }, (err) => {
+          _retryCount -- ;
+          if(opts.retry && _retryCount >= 0) return _commission();
+        })
+    };
+
+    return _commission();
   }
+
 
   get request() {
     return {
@@ -105,47 +119,77 @@ class Client {
     }
   }
 
-  //TODO: work in progress, need to abstact publish and subscribe as promises
-  // Need to respect the existing function signature with support of callback and promise
-  // add an event log
+  addRelatedDevice() {
+
+  }
+
+
   publish(topic, payload, opts, cb) {
     return new Promise((resolve, reject) => {
+      if (topic === '' || topic === null) {
+        log.error({eventType: 'publish', topic: topic, data: payload});
+        throw new Error('publishFailure', 'publishFailure')
+      }
+
       this._self.publish(topic, payload, opts || null, (err) => {
-        if (err) reject(err);
-        else resolve()
+        if (err) {
+          log.error({eventType: 'publish', topic: topic, data: payload});
+          reject(err);
+          throw new Error('publishFailure', 'publishFailure')
+        }
+        else {
+          log.info({eventType: 'publish', topic: topic, data: payload, opts: opts});
+          resolve()
+        }
       })
     })
   }
 
   //TODO: write abstraction for subscribe;
-  subscribe(topic, opts, cb) {
+  subscribe(topic, opts) {
     return new Promise((resolve, reject) => {
-      if(topic === '' || topic === null) {
-        log.error({eventType : 'subscribe', topic : 'topic', data : opts});
+      if (topic === '' || topic === null) {
+        log.error({eventType: 'subscribe', topic: topic, opts: opts});
         this.disconnect();
         throw new Error('subscriptionFailure', 'subscriptionFailure')
       }
 
       this._self.subscribe(topic, opts, (err) => {
-        if(err) {
-          log.error({eventType : 'subscribe', topic : 'topic', data : opts});
+        if (err) {
+          log.error({eventType: 'subscribe', topic: topic, opts: opts});
           this.disconnect();
           throw new Error('subscriptionFailure')
         } else {
-          log.info({eventType : 'subscribe', topic : 'topic', data : opts});
+          log.info({eventType: 'subscribe', topic: topic, opts: opts});
           resolve();
         }
       })
     })
+  }
 
-
-
+  unsubscribe(topic, opts) {
+    return new Promise((resolve, reject) => {
+      if (topic === '' || topic === null) {
+        log.error({eventType: 'unsubscribe', topic: topic, opts: opts});
+        this.disconnect();
+        throw new Error('unsubscribeFailure', 'unsubscribeFailure')
+      }
+      this._self.unsubscribe(topic, (err) => {
+        if (err) {
+          log.error({eventType: 'unsubscribe', topic: topic, opts: opts});
+          throw new Error('unsubscribeFailure');
+        } else {
+          log.info({eventType: 'unsubscribe', topic: topic, opts: opts});
+          resolve();
+        }
+      })
+    })
   }
 
   disconnect(opts) {
     return new Promise((resolve, reject) => {
-      this._self.end(opts, (err,data)=>{
-        if(err) reject(err);
+      this._self.end(opts, (err, data) => {
+        if (err) reject(err);
         else resolve()
       });
     })
