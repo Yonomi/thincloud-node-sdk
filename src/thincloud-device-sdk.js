@@ -75,9 +75,7 @@ class Client {
         this.commission(this.config).then(resolve, reject);
       });
 
-      this._self.on('error', (err) => {
-        console.log('init error', err)
-      })
+      this._self.on('error', reject)
 
     });
   }
@@ -134,14 +132,14 @@ class Client {
     }];
 
     const commissionRequest = new Utils.Request('commission', [{
-      data: _data
+      data: _deviceObject
     }]);
 
     const commissionTopic = new RegistrationTopic(`${_deviceObject.deviceType}_${_deviceObject.physicalId}`, commissionRequest.id);
     return new Utils.RequestManager(commissionTopic, commissionRequest, this, this.getRequestTimeout())
       .rpc()
       .then((data) => {
-        console.log(data);
+        return data;
       })
   }
 
