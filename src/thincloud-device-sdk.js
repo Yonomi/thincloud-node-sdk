@@ -32,6 +32,14 @@ class Client {
     this._deviceId = id;
   }
 
+  get relatedDevices(){
+    return this._relatedDevices;
+  }
+
+  // set relatedDevices(val){
+  //
+  // }
+
   getCommissionTimeout() {
     return !this.config.timeoutCommission ? Utils.Constants.defaults.timeout : this.config.timeoutCommission;
   }
@@ -119,8 +127,22 @@ class Client {
     }
   }
 
-  addRelatedDevice() {
+  _addRelatedDevice(deviceObject) {
+    let _deviceObject = Object.assign(deviceObject);
+    _deviceObject.relatedDevices = [{
+      deviceId: this.deviceId
+    }];
 
+    const commissionRequest = new Utils.Request('commission', [{
+      data: _data
+    }]);
+
+    const commissionTopic = new RegistrationTopic(`${_deviceObject.deviceType}_${_deviceObject.physicalId}`, commissionRequest.id);
+    return new Utils.RequestManager(commissionTopic, commissionRequest, this, this.getRequestTimeout())
+      .rpc()
+      .then((data) => {
+        console.log(data);
+      })
   }
 
 
@@ -145,7 +167,6 @@ class Client {
     })
   }
 
-  //TODO: write abstraction for subscribe;
   subscribe(topic, opts) {
     return new Promise((resolve, reject) => {
       if (topic === '' || topic === null) {
