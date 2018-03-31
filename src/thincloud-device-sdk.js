@@ -24,6 +24,10 @@ class Client {
     return this._config;
   }
 
+  set config(config) {
+    this._config = config;
+  }
+
   get deviceId() {
     return this._deviceId;
   }
