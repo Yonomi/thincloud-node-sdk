@@ -38,7 +38,9 @@ const configuration = {
 
 const client = new SDK();
 client.setConfiguration(configuration);
-client.init().then((data) => {
+client.init({
+  autoCommission: false
+}).then((data) => {
 
   client.eventSource.on('commands', (data) => {
     data.respond(null, {"message": "get command call"}).then(data=> console.log(data), err => console.log('get err'));

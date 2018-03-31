@@ -48,7 +48,12 @@ class Client {
     return !this.config.timeoutRequest ? Utils.Constants.defaults.timeout : this.config.timeoutRequest;
   }
 
-  init() {
+  init(opts) {
+    if(!opts) opts = {};
+
+    if(opts.autoCommission === null)
+      opts.autoCommission = true;
+
     log.info('initialize aws-iot connector');
     return new Promise((resolve, reject) => {
       if (!this._config) {
@@ -72,7 +77,11 @@ class Client {
       });
 
       this._self.on('connect', () => {
-        this.commission(this.config).then(resolve, reject);
+        if(opts.autoCommission){
+          this.commission().then(resolve, reject);
+        } else {
+          resolve();
+        }
       });
 
       this._self.on('error', reject)
@@ -81,21 +90,21 @@ class Client {
   }
 
 
-  commission(deviceInfo, opts) {
+  commission(opts) {
 
     if(!opts) opts = {};
-    opts.retry = true;
+    opts.retry = false;
 
     let _retryCount = opts.retryCount || 10;
 
     let _commission = () => {
       const commissionRequest = new Utils.Request('commission', [{
         data: {
-          deviceType: deviceInfo.deviceType,
-          physicalId: deviceInfo.physicalId
+          deviceType: this.config.deviceType,
+          physicalId: this.config.physicalId
         }
       }]);
-      const commissionTopic = new RegistrationTopic(`${deviceInfo.deviceType}_${deviceInfo.physicalId}`, commissionRequest.id);
+      const commissionTopic = new RegistrationTopic(`${this.config.deviceType}_${this.config.physicalId}`, commissionRequest.id);
 
       return new Utils.RequestManager(commissionTopic, commissionRequest, this, this.getCommissionTimeout())
         .rpc()
@@ -139,6 +148,7 @@ class Client {
     return new Utils.RequestManager(commissionTopic, commissionRequest, this, this.getRequestTimeout())
       .rpc()
       .then((data) => {
+        this._relatedDevices.push({"deviceId": data.result.deviceId});
         return data;
       })
   }
