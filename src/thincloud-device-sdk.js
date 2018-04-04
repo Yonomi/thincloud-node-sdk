@@ -10,6 +10,9 @@ class Client {
   constructor(config) {
     this._config = config;
     this._relatedDevices = [];
+    this._self = null;
+    this._isCommissioned = false;
+    this._isConnected = false;
   }
 
   get eventSource() {
@@ -40,6 +43,24 @@ class Client {
     return this._relatedDevices;
   }
 
+
+  get isCommissioned(){
+    return this._isCommissioned;
+  }
+
+  set isCommissioned(val){
+    this._isCommissioned = val;
+  }
+
+  get isConnected(){
+    return this._isConnected;
+  }
+
+  set isConnected(val){
+    this._isConnected = val;
+  }
+
+
   // set relatedDevices(val){
   //
   // }
@@ -55,7 +76,7 @@ class Client {
   init(opts) {
     if(!opts) opts = {};
 
-    if(opts.autoCommission === null)
+    if(opts.autoCommission == null)
       opts.autoCommission = true;
 
     log.info('initialize aws-iot connector');
@@ -65,39 +86,37 @@ class Client {
         throw new Error('configuration data not set. Can\'t connect to aws');
       }
 
-      if (!this._config.shadow) {
-        log.info('connect to AWS as a device');
-        this._self = awsIot.device(this._config);
-      }
-      else {
-        log.info('connect to AWS as a thingshadow');
-        this._self = awsIot.thingShadow(this._config);
-      }
+      return this.connect()
+        .then(() => {
+          //set a processor to filter the messages
+          const messageProcessor = new Utils.MessageProcessor(this);
+          this._self.on('message', (topic, payload) => {
+            messageProcessor.process(topic, payload);
+          });
 
-      //set a processor to filter the messages
-      const messageProcessor = new Utils.MessageProcessor(this);
-      this._self.on('message', (topic, payload) => {
-        messageProcessor.process(topic, payload);
-      });
+          this._self.on('connect', () => {
+            this.isConnected = true;
+            if(opts.autoCommission){
+              this.commission().then(resolve, reject);
+            } else {
+              resolve();
+            }
+          });
 
-      this._self.on('connect', () => {
-        if(opts.autoCommission){
-          this.commission().then(resolve, reject);
-        } else {
-          resolve();
-        }
-      });
-
-      this._self.on('error', reject)
+          this._self.on('error', reject)
+        })
 
     });
   }
 
 
   commission(opts) {
-
     if(!opts) opts = {};
     opts.retry = false;
+
+    if(this.isCommissioned && !opts.force){
+      return Promise.resolve();
+    }
 
     let _retryCount = opts.retryCount || 10;
 
@@ -113,11 +132,16 @@ class Client {
       return new Utils.RequestManager(commissionTopic, commissionRequest, this, this.getCommissionTimeout())
         .rpc()
         .then((data) => {
+          this.isCommissioned = true;
           this._self.subscribe(new CommandTopic(this.deviceId).request);
           return data;
         }, (err) => {
+          this.isCommissioned = false;
           _retryCount -- ;
           if(opts.retry && _retryCount >= 0) return _commission();
+          else {
+            return Promise.reject(err);
+          }
         })
     };
 
@@ -216,6 +240,30 @@ class Client {
           resolve();
         }
       })
+    })
+  }
+
+  connect(opts){
+    return new Promise((resolve, reject) => {
+      if(this._self != null){
+        this._self.end();
+        this._self = null;
+      }
+
+      try{
+        if (!this._config.shadow) {
+          log.info('connect to AWS as a device');
+          this._self = awsIot.device(this._config);
+          resolve();
+        }
+        else {
+          log.info('connect to AWS as a thingshadow');
+          this._self = awsIot.thingShadow(this._config);
+          resolve()
+        }
+      } catch(ex){
+        reject(ex);
+      }
     })
   }
 
