@@ -19,12 +19,12 @@ class Command {
   }
 
   success(payload) {
-    let message = new Message(this.id, payload, 'success', 200);
+    let message = new Message(this.id, {body: payload}, 'success', 200);
     return this._client.publish(this._topic.response, message.toString());
   }
 
   error(payload){
-    let message = new Message(this.id, payload, 'error', 400);
+    let message = new Message(this.id, {body: payload}, 'error', 400);
     return this._client.publish(this._topic.response, message.toString());
   }
 
