@@ -133,7 +133,7 @@ class Client {
         .rpc()
         .then((data) => {
           this.isCommissioned = true;
-          this._self.subscribe(new CommandTopic(this.deviceId).request);
+          this.subscribe(new CommandTopic(this.deviceId).request);
           return data;
         }, (err) => {
           this.isCommissioned = false;

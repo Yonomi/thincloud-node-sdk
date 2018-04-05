@@ -5,12 +5,12 @@ const Constants = {
     SUBSCRIPTION: 'subscription',
     DEVICE: 'devices',
     DEVICE_REQUEST: 'requests',
-    DEVICE_COMMAND: 'commands'
+    DEVICE_COMMAND: 'command'
   },
   DeviceEvents: {
     DEVICE_SUBSCRIPTION: 'subscription',
     DEVICE_REQUEST: 'requests',
-    DEVICE_COMMAND: 'commands'
+    DEVICE_COMMAND: 'command'
   },
   Status: {
     SUCCESS: 'success',
