@@ -19,23 +19,13 @@ class Command {
   }
 
   success(payload) {
-    return new Promise((resolve, reject)=> {
-      let message = new Message(this.id, payload, 'success', 200);
-      this._client.eventSource.publish(this._topic.response, message.toString(), (err)=> {
-        if(err) reject(err);
-        else resolve(message.toJSON())
-      });
-    });
+    let message = new Message(this.id, payload, 'success', 200);
+    return this._client.publish(this._topic.response, message.toString());
   }
 
   error(payload){
-    return new Promise((resolve, reject)=> {
-      let message = new Message(this.id, payload, 'error', 400);
-      this._client.eventSource.publish(this._topic.response, message.toString(), (err)=> {
-        if(err) reject(err);
-        else resolve(message.toJSON())
-      });
-    });
+    let message = new Message(this.id, payload, 'error', 400);
+    return this._client.publish(this._topic.response, message.toString());
   }
 
   toJSON(){
