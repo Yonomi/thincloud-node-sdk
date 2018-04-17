@@ -38,7 +38,10 @@ class MessageProcessor {
         listener: Constants.DeviceEvents.DEVICE_SUBSCRIPTION,
         data: json
       });
-      this.eventSource.emit(Constants.DeviceEvents.DEVICE_SUBSCRIPTION, json);
+      this.eventSource.emit(
+        `${Constants.DeviceEvents.DEVICE_SUBSCRIPTION}/${_topic.requestId}`,
+        json
+      );
     }
 
     if (
@@ -52,7 +55,7 @@ class MessageProcessor {
         listener: `${Constants.DeviceEvents.DEVICE_REQUEST}/${json.id}`,
         data: json
       });
-      this.eventSource.emit(`${Constants.DeviceEvents.DEVICE_REQUEST}/${json.id}`, json);
+      this.eventSource.emit(`${Constants.DeviceEvents.DEVICE_REQUEST}/${_topic.requestId}`, json);
     }
 
     if (
