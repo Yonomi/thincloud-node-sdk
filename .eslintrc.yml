@@ -1,0 +1,41 @@
+env:
+  browser: false
+  es6: true
+  node: true
+
+parserOptions:
+  ecmaVersion: 2017
+
+extends: standard
+
+plugins:
+  - node
+  - standard
+  - promise
+
+rules:
+
+  max-len:
+    - 'error'
+    - { code: 100, ignoreComments: true }
+
+  node/no-unsupported-features:
+    - error
+    - { version: 6 }
+  no-eval: warn
+
+  no-unused-vars:
+    - warn
+    - { vars: all, args: none }
+
+  padded-blocks:
+    - error
+    - { switches: always, classes: always }
+
+  semi:
+    - error
+    - always
+
+  space-before-function-paren:
+    - error
+    - { anonymous: 'always', named: 'never' }

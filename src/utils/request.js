@@ -3,23 +3,25 @@
 let uuid = require('uuid');
 
 class Request {
-  constructor(method, params){
+
+  constructor(method, params) {
     this.id = uuid.v4();
     this.method = method;
     this.params = params;
   }
 
-  toJSON(){
+  toJSON() {
     return {
       id: this.id,
-      method : this.method,
-      params :this.params
-    }
+      method: this.method,
+      params: this.params
+    };
   }
 
-  toString(){
+  toString() {
     return JSON.stringify(this.toJSON());
   }
+
 }
 
 module.exports = Request;
