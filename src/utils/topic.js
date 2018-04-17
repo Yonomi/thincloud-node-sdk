@@ -10,12 +10,10 @@ class Topic {
     this.requestId = topic.split('/')[4];
   }
 
-  toString(){
+  toString() {
     return this._self;
   }
-  
+
 }
-
-
 
 module.exports = Topic;

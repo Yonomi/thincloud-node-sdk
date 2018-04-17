@@ -8,16 +8,17 @@ class Timer {
   }
 
   run() {
-    return new Promise((resolve, reject)=> {
-      this.timer = setTimeout(()=> {
-        reject(new Error('timeoutException'))
-      }, this.duration)
-    })
+    return new Promise((resolve, reject) => {
+      this.timer = setTimeout(() => {
+        reject(new Error('timeoutException'));
+      }, this.duration);
+    });
   }
 
   destroy() {
     clearTimeout(this.timer);
   }
+
 }
 
 module.exports = Timer;

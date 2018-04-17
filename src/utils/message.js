@@ -2,16 +2,14 @@
 const constants = require('./constants');
 
 class Message {
-  
+
   constructor(requestId, data, status, code) {
     this._id = requestId;
     this._data = data || {};
     this._status = status;
 
-    if (this._status === constants.Status.ERROR)
-      this._statusCode = code || 400;
-    if (this._status === constants.Status.SUCCESS)
-      this._statusCode = code || 200;
+    if (this._status === constants.Status.ERROR) this._statusCode = code || 400;
+    if (this._status === constants.Status.SUCCESS) this._statusCode = code || 200;
   }
 
   payload() {
@@ -40,14 +38,13 @@ class Message {
     }
 
     return payload;
-
   }
 
-  toJSON(){
+  toJSON() {
     return this.payload();
   }
 
-  toString(){
+  toString() {
     return JSON.stringify(this.payload());
   }
 
