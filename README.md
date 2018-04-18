@@ -1,6 +1,6 @@
-# Thincloud-device-sdk
+# Thincloud Node SDK
 
-Helps to connect the device to AWS
+Helps connect the device to ThinCloud
 
 ## Getting Started
 
@@ -20,7 +20,7 @@ Three certificates are required:
 Add the dependency in your package json
 
 ```
-"@yonomi/thincloud-device-sdk": "git+ssh://git@github.com/Yonomi/thincloud-device-sdk.git#develop"
+"@yonomi/thincloud-device-sdk": "git+ssh://git@github.com/Yonomi/thincloud-device-sdk.git"
 ```
 
 and then run npm install
