@@ -11,9 +11,9 @@ These instructions will get you a copy of the project up and running on your loc
 Yo need to have the certificates of the device
 Three certificates are required:
 
- * aws-root-ca.pem
- * certificate.pem.crt
- * private.pem.key
+* aws-root-ca.pem
+* certificate.pem.crt
+* private.pem.key
 
 ### Installing
 
@@ -34,6 +34,7 @@ const sdk = require('@yonomi/thincloud-device-sdk');
 ```
 
 get an instance of the sdk
+
 ```
 const client = new sdk();
 ```
@@ -57,7 +58,6 @@ const configuration = {
 
 client.setConfiguration(configuration);
 ```
-
 
 init the commissioning device, will return a promise to continue working
 
@@ -93,8 +93,8 @@ Example:
 client.request.publish('get', []).then(data => console.log(data), err => console.log(err));
 ```
 
-
 Add a listener for a command device
+
 ```
 client.eventSource.on('commands', (data) => {
   data.respond([id|null], payload).then(function (err, res));
@@ -102,28 +102,13 @@ client.eventSource.on('commands', (data) => {
 ```
 
 Add a listener for subscription
+
 ```
 client.eventSource.on('subscription', function (err, res))
 ```
 
 Add a listener for request
+
 ```
 client.eventSource.on('requests', function (err, res))
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
