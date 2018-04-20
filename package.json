@@ -1,14 +1,13 @@
 {
   "name": "@yonomi/thincloud-node-sdk",
   "version": "1.0.0",
-  "description": "Yonomi thincloud AWS connector",
-  "author": {
-    "name": "Yonomi (http://yonomi.co)"
-  },
-  "main": "src/thincloud-device-sdk.js",
+  "description": "Yonomi ThinCloud AWS connector",
+  "author": "Yonomi (http://yonomi.co)",
+  "license": "SEE LICENSE IN LICENSE",
+  "main": "src/thincloud-node-sdk.js",
   "repository": {
     "type": "git",
-    "url": "git@github.com:Yonomi/thincloud-device-sdk.git"
+    "url": "git@github.com:Yonomi/thincloud-node-sdk.git"
   },
   "scripts": {
     "lint": "eslint src",
