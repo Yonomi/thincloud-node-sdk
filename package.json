@@ -1,6 +1,6 @@
 {
   "name": "@yonomi/thincloud-node-sdk",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Yonomi thincloud AWS connector",
   "author": {
     "name": "Yonomi (http://yonomi.co)"
