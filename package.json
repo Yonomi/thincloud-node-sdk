@@ -7,8 +7,9 @@
   "main": "src/thincloud-node-sdk.js",
   "repository": {
     "type": "git",
-    "url": "git@github.com:Yonomi/thincloud-node-sdk.git"
+    "url": "git+https://github.com/yonomi/thincloud-node-sdk.git"
   },
+  "homepage": "https://github.com/yonomi/thincloud-node-sdk#readme",
   "scripts": {
     "lint": "eslint src",
     "prettier": "prettier-eslint 'src/**/*.js' --write"
