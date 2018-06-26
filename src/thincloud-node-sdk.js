@@ -181,7 +181,7 @@ class Client {
         return relatedDevice.commission()
           .then((device) => {
             this.relatedDevicesMap[device.deviceId] = relatedDevice;
-            return data;
+            return device;
           })
       },
       remove: (deviceId, deviceType, physicalId) => {
@@ -189,7 +189,7 @@ class Client {
         return relatedDevice.decommission()
           .then((device) => {
             this.relatedDevicesMap[device.deviceId] = undefined;
-            return data;
+            return device;
           })
       }
     }
