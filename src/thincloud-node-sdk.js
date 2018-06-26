@@ -179,16 +179,16 @@ class Client {
       add: (deviceId, deviceType, physicalId) => {
         let relatedDevice = new Utils.RelatedDevice(this, deviceId, deviceType, physicalId);
         return relatedDevice.commission()
-          .then((data) => {
-            this.relatedDevicesMap[data.deviceId] = relatedDevice;
+          .then((device) => {
+            this.relatedDevicesMap[device.deviceId] = relatedDevice;
             return data;
           })
       },
       remove: (deviceId, deviceType, physicalId) => {
         let relatedDevice = new Utils.RelatedDevice(this, deviceId, deviceType, physicalId);
         return relatedDevice.decommission()
-          .then((data) => {
-            this.relatedDevicesMap[data.deviceId] = undefined;
+          .then((device) => {
+            this.relatedDevicesMap[device.deviceId] = undefined;
             return data;
           })
       }

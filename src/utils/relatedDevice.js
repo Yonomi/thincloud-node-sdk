@@ -58,7 +58,7 @@ class RelatedDevice {
         data => {
           this.deviceId = data.result.deviceId;
           this._parent.subscribe(new CommandTopic(this.deviceId).request);
-          return data;
+          return this.toJSON();
         }
       )
   }
@@ -82,7 +82,7 @@ class RelatedDevice {
       .then(
         (data) => {
           this._parent.unsubscribe(new CommandTopic(this.deviceId).request);
-          return data;
+          return this.toJSON();
         }
       );
   }
