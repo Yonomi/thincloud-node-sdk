@@ -1,7 +1,7 @@
 'use strict';
 
 const Request = require('./request');
-const RequestManager = require('./requestManager')
+const RequestManager = require('./requestManager');
 const { RegistrationTopic, RequestTopic, CommandTopic } = require('./topicBuilder');
 
 //TODO: add ability to subscirbe/unsubscribe to commands and route them properly
@@ -54,6 +54,15 @@ class RelatedDevice {
       30000
     )
       .rpc()
+      .then(
+        data => {
+          this.deviceId = data.result.deviceId;
+        }
+      )
+      .then(
+        () =>
+          this._parent.subscribe(new CommandTopic(this.deviceId).request)
+      );
   }
 
   decommission(){
@@ -72,6 +81,10 @@ class RelatedDevice {
       30000
     )
       .rpc()
+      .then(
+        () =>
+          this._parent.unsubscribe(new CommandTopic(this.deviceId).request)
+      );
   }
 
   toJSON(){
