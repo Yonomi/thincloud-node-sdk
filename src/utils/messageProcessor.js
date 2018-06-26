@@ -32,7 +32,6 @@ class MessageProcessor {
     }
 
     if (_topic.type === Constants.Topic.REGISTRATION) {
-      this._client.deviceId = json && json.result ? json.result.deviceId : null;
       log.info({
         eventType: 'emit',
         listener: Constants.DeviceEvents.DEVICE_SUBSCRIPTION,

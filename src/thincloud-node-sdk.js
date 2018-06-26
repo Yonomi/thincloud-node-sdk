@@ -9,7 +9,7 @@ class Client {
 
   constructor(config) {
     this._config = config;
-    this._relatedDevices = [];
+    this.relatedDevicesMap = {};
     this._self = null;
     this._isCommissioned = false;
     this._isConnected = false;
@@ -39,10 +39,6 @@ class Client {
     this._deviceId = id;
   }
 
-  get relatedDevices() {
-    return this._relatedDevices;
-  }
-
   get isCommissioned() {
     return this._isCommissioned;
   }
@@ -58,10 +54,6 @@ class Client {
   set isConnected(val) {
     this._isConnected = val;
   }
-
-  // set relatedDevices(val){
-  //
-  // }
 
   getCommissionTimeout() {
     return !this.config.timeoutCommission
@@ -141,6 +133,7 @@ class Client {
         .rpc()
         .then(
           data => {
+            this.deviceId = data.result.deviceId;
             this.isCommissioned = true;
             this.subscribe(new CommandTopic(this.deviceId).request);
             return data;
@@ -181,35 +174,25 @@ class Client {
     };
   }
 
-  _addRelatedDevice(deviceObject) {
-    let _deviceObject = Object.assign(deviceObject);
-    _deviceObject.relatedDevices = [
-      {
-        deviceId: this.deviceId
+  get relatedDevice(){
+    return {
+      add: (deviceId, deviceType, physicalId) => {
+        let relatedDevice = new Utils.RelatedDevice(this, deviceId, deviceType, physicalId);
+        return relatedDevice.commission()
+          .then((device) => {
+            this.relatedDevicesMap[device.deviceId] = relatedDevice;
+            return device;
+          })
+      },
+      remove: (deviceId, deviceType, physicalId) => {
+        let relatedDevice = new Utils.RelatedDevice(this, deviceId, deviceType, physicalId);
+        return relatedDevice.decommission()
+          .then((device) => {
+            this.relatedDevicesMap[device.deviceId] = undefined;
+            return device;
+          })
       }
-    ];
-
-    const commissionRequest = new Utils.Request('commission', [
-      {
-        data: _deviceObject
-      }
-    ]);
-
-    const commissionTopic = new RegistrationTopic(
-      `${_deviceObject.deviceType}_${_deviceObject.physicalId}`,
-      commissionRequest.id
-    );
-    return new Utils.RequestManager(
-      commissionTopic,
-      commissionRequest,
-      this,
-      this.getRequestTimeout()
-    )
-      .rpc()
-      .then(data => {
-        this._relatedDevices.push({ deviceId: data.result.deviceId });
-        return data;
-      });
+    }
   }
 
   publish(topic, payload, opts, cb) {
