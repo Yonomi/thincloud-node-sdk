@@ -9,7 +9,7 @@ class Client {
 
   constructor(config) {
     this._config = config;
-    this._relatedDevicesMap = {};
+    this.relatedDevicesMap = {};
     this._self = null;
     this._isCommissioned = false;
     this._isConnected = false;
@@ -180,7 +180,7 @@ class Client {
         let relatedDevice = new Utils.RelatedDevice(this, deviceId, deviceType, physicalId);
         return relatedDevice.commission()
           .then((data) => {
-            this._relatedDevicesMap[data.deviceId] = relatedDevice;
+            this.relatedDevicesMap[data.deviceId] = relatedDevice;
             return data;
           })
       },
@@ -188,7 +188,7 @@ class Client {
         let relatedDevice = new Utils.RelatedDevice(this, deviceId, deviceType, physicalId);
         return relatedDevice.decommission()
           .then((data) => {
-            this._relatedDevicesMap[data.deviceId] = undefined;
+            this.relatedDevicesMap[data.deviceId] = undefined;
             return data;
           })
       }

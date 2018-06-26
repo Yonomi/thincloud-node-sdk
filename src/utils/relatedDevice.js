@@ -57,12 +57,10 @@ class RelatedDevice {
       .then(
         data => {
           this.deviceId = data.result.deviceId;
+          this._parent.subscribe(new CommandTopic(this.deviceId).request);
+          return data;
         }
       )
-      .then(
-        () =>
-          this._parent.subscribe(new CommandTopic(this.deviceId).request)
-      );
   }
 
   decommission(){
@@ -82,8 +80,10 @@ class RelatedDevice {
     )
       .rpc()
       .then(
-        () =>
-          this._parent.unsubscribe(new CommandTopic(this.deviceId).request)
+        (data) => {
+          this._parent.unsubscribe(new CommandTopic(this.deviceId).request);
+          return data;
+        }
       );
   }
 
