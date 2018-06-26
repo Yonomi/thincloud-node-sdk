@@ -188,7 +188,7 @@ class Client {
         let relatedDevice = new Utils.RelatedDevice(this, deviceId, deviceType, physicalId);
         return relatedDevice.decommission()
           .then((device) => {
-            this.relatedDevicesMap[device.deviceId] = undefined;
+            delete this.relatedDevicesMap[device.deviceId];
             return device;
           })
       }
