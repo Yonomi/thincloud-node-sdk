@@ -97,15 +97,13 @@ class Client {
 
         this._self.on('connect', () => {
           this.isConnected = true;
-          if (opts.autoCommission) {
-            this.commission().then(resolve, reject);
-          } else {
-            resolve();
-          }
 
           if(opts.syncRelatedDevices){
             this.relatedDevices.sync();
           }
+
+          opts.autoCommission ? this.commission(resolve, reject) : resolve();
+
         });
 
         this._self.on('error', reject);
