@@ -34,6 +34,10 @@ class RelatedDevices {
   }
 
   getRelatedDeviceIds(){
+    if(!this.client.device){
+      return Promise.resolve([]);
+    }
+
     const request = new Utils.Request('get', [{}]);
     return new Utils.RequestManager(
       new RequestTopic(this.client.deviceId, request.id),
