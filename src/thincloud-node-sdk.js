@@ -2,8 +2,13 @@
 
 const awsIot = require('aws-iot-device-sdk');
 const Utils = require('./utils');
-const { RegistrationTopic, RequestTopic, CommandTopic } = require('./utils/topicBuilder');
+const {
+  RegistrationTopic,
+  RequestTopic,
+  CommandTopic
+} = require('./utils/topicBuilder');
 const log = require('./utils').Logger;
+const RelatedDevices = require('./utils/relatedDevices');
 
 class Client {
 
@@ -55,16 +60,20 @@ class Client {
     this._isConnected = val;
   }
 
+  get relatedDeviceManager() {
+    return new RelatedDevices(this);
+  }
+
   getCommissionTimeout() {
-    return !this.config.timeoutCommission
-      ? Utils.Constants.defaults.timeout
-      : this.config.timeoutCommission;
+    return !this.config.timeoutCommission ?
+      Utils.Constants.defaults.timeout :
+      this.config.timeoutCommission;
   }
 
   getRequestTimeout() {
-    return !this.config.timeoutRequest
-      ? Utils.Constants.defaults.timeout
-      : this.config.timeoutRequest;
+    return !this.config.timeoutRequest ?
+      Utils.Constants.defaults.timeout :
+      this.config.timeoutRequest;
   }
 
   init(opts) {
@@ -88,11 +97,13 @@ class Client {
 
         this._self.on('connect', () => {
           this.isConnected = true;
-          if (opts.autoCommission) {
-            this.commission().then(resolve, reject);
-          } else {
-            resolve();
+
+          if(opts.syncRelatedDevices){
+            this.relatedDevices.sync();
           }
+
+          opts.autoCommission ? this.commission(resolve, reject) : resolve();
+
         });
 
         this._self.on('error', reject);
@@ -111,14 +122,12 @@ class Client {
     let _retryCount = opts.retryCount || 10;
 
     let _commission = () => {
-      const commissionRequest = new Utils.Request('commission', [
-        {
-          data: {
-            deviceType: this.config.deviceType,
-            physicalId: this.config.physicalId
-          }
+      const commissionRequest = new Utils.Request('commission', [{
+        data: {
+          deviceType: this.config.deviceType,
+          physicalId: this.config.physicalId
         }
-      ]);
+      }]);
       const commissionTopic = new RegistrationTopic(
         `${this.config.deviceType}_${this.config.physicalId}`,
         commissionRequest.id
@@ -174,7 +183,7 @@ class Client {
     };
   }
 
-  get relatedDevice(){
+  get relatedDevice() {
     return {
       add: (deviceId, deviceType, physicalId) => {
         let relatedDevice = new Utils.RelatedDevice(this, deviceId, deviceType, physicalId);
@@ -195,20 +204,47 @@ class Client {
     }
   }
 
+  get relatedDevices() {
+    return {
+      sync: () => {
+        return this.relatedDeviceManager.load()
+          .then(relatedDevices => {
+            relatedDevices.forEach((relatedDevice) => {
+              this.relatedDevicesMap[relatedDevice.deviceId] = relatedDevice;
+            });
+            return relatedDevices;
+          })
+      }
+    }
+  }
+
   publish(topic, payload, opts, cb) {
     return new Promise((resolve, reject) => {
       if (topic === '' || topic === null) {
-        log.error({ eventType: 'publish', topic: topic, data: payload });
+        log.error({
+          eventType: 'publish',
+          topic,
+          data: payload
+        });
         throw new Error('publishFailure', 'publishFailure');
       }
 
       this._self.publish(topic, payload, opts || null, err => {
         if (err) {
-          log.error({ eventType: 'publish', topic: topic, data: payload });
+          log.error({
+            eventType: 'publish',
+            topic,
+            data: payload
+          });
           reject(err);
           throw new Error('publishFailure', 'publishFailure');
         } else {
-          log.info({ eventType: 'publish', topic: topic, data: payload, opts: opts });
+          log.info({
+            eventType: 'publish',
+            topic,
+            data: payload,
+            opts
+          });
           resolve();
         }
       });
@@ -218,18 +254,30 @@ class Client {
   subscribe(topic, opts) {
     return new Promise((resolve, reject) => {
       if (topic === '' || topic === null) {
-        log.error({ eventType: 'subscribe', topic: topic, opts: opts });
+        log.error({
+          eventType: 'subscribe',
+          topic,
+          opts
+        });
         this.disconnect();
         throw new Error('subscriptionFailure', 'subscriptionFailure');
       }
 
       this._self.subscribe(topic, opts, err => {
         if (err) {
-          log.error({ eventType: 'subscribe', topic: topic, opts: opts });
+          log.error({
+            eventType: 'subscribe',
+            topic,
+            opts
+          });
           this.disconnect();
           throw new Error('subscriptionFailure');
         } else {
-          log.info({ eventType: 'subscribe', topic: topic, opts: opts });
+          log.info({
+            eventType: 'subscribe',
+            topic,
+            opts
+          });
           resolve();
         }
       });
@@ -239,16 +287,28 @@ class Client {
   unsubscribe(topic, opts) {
     return new Promise((resolve, reject) => {
       if (topic === '' || topic === null) {
-        log.error({ eventType: 'unsubscribe', topic: topic, opts: opts });
+        log.error({
+          eventType: 'unsubscribe',
+          topic,
+          opts
+        });
         this.disconnect();
         throw new Error('unsubscribeFailure', 'unsubscribeFailure');
       }
       this._self.unsubscribe(topic, err => {
         if (err) {
-          log.error({ eventType: 'unsubscribe', topic: topic, opts: opts });
+          log.error({
+            eventType: 'unsubscribe',
+            topic,
+            opts
+          });
           throw new Error('unsubscribeFailure');
         } else {
-          log.info({ eventType: 'unsubscribe', topic: topic, opts: opts });
+          log.info({
+            eventType: 'unsubscribe',
+            topic,
+            opts
+          });
           resolve();
         }
       });
