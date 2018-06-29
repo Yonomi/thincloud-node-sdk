@@ -3,8 +3,8 @@ const Utils = require('./../utils');
 const { RequestTopic } = require('./../utils/topicBuilder');
 
 class RelatedDevices {
-  constructor(parent) {
-    this._parent = parent;
+  constructor(client) {
+    this.client = client;
   }
 
   load(){
@@ -23,21 +23,21 @@ class RelatedDevices {
     return new Utils.RequestManager(
       new RequestTopic(relatedDeviceId, request.id),
       request,
-      this,
+      this.client,
       300000
     )
       .rpc()
       .then(device => {
-        return new Utils.RelatedDevice(this._parent, device.deviceId, device.deviceType, device.physicalId);
+        return new Utils.RelatedDevice(this.client, device.deviceId, device.deviceType, device.physicalId);
       })
   }
 
   getRelatedDeviceIds(){
     const request = new Utils.Request('get', [{}]);
     return new Utils.RequestManager(
-      new RequestTopic(this._parent.deviceId, request.id),
+      new RequestTopic(this.client.deviceId, request.id),
       request,
-      this,
+      this.client,
       300000
     )
       .rpc()
