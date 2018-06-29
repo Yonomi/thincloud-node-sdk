@@ -8,7 +8,7 @@ const {
   CommandTopic
 } = require('./utils/topicBuilder');
 const log = require('./utils').Logger;
-const RelatedDevices = require('./relatedDevices');
+const RelatedDevices = require('./utils/relatedDevices');
 
 class Client {
 
