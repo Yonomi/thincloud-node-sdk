@@ -1,6 +1,6 @@
 'use strict';
-const Utils = require('./utils');
-const { RequestTopic } = require('./utils/topicBuilder');
+const Utils = require('./../utils');
+const { RequestTopic } = require('./../utils/topicBuilder');
 
 class RelatedDevices {
   constructor(parent) {
