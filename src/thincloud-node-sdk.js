@@ -102,6 +102,10 @@ class Client {
           } else {
             resolve();
           }
+
+          if(opts.syncRelatedDevices){
+            this.relatedDevices.sync();
+          }
         });
 
         this._self.on('error', reject);
