@@ -13,8 +13,8 @@ class RelatedDevices {
 
   getRelatedDevices(){
     return this.getRelatedDeviceIds()
-      .then(relatedDeviceIds => Promise.all(relatedDeviceIds.map((id) => {
-        return this.getRelatedDevice(id)
+      .then(relatedDeviceIds => Promise.all(relatedDeviceIds.map((relatedDevice) => {
+        return this.getRelatedDevice(relatedDevice.deviceId)
       })));
   }
 
