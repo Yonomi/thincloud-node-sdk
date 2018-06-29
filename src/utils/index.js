@@ -10,5 +10,6 @@ module.exports = {
   Message: require('./message'),
   MessageProcessor: require('./messageProcessor'),
   Timer: require('./timer'),
-  Logger: require('./logger')
+  Logger: require('./logger'),
+  RelatedDevice: require('./relatedDevice')
 };
