@@ -41,8 +41,8 @@ class RelatedDevices {
       300000
     )
       .rpc()
-      .then(device => {
-        return device.relatedDevices;
+      .then(response => {
+        return response.result.body.relatedDevices;
       })
   }
 
