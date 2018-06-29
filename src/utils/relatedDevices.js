@@ -34,7 +34,7 @@ class RelatedDevices {
   }
 
   getRelatedDeviceIds(){
-    if(!this.client.device){
+    if(!this.client.deviceId){
       return Promise.resolve([]);
     }
 
