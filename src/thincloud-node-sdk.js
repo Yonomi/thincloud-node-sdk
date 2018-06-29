@@ -223,7 +223,7 @@ class Client {
       if (topic === '' || topic === null) {
         log.error({
           eventType: 'publish',
-          topic: topic,
+          topic,
           data: payload
         });
         throw new Error('publishFailure', 'publishFailure');
@@ -233,7 +233,7 @@ class Client {
         if (err) {
           log.error({
             eventType: 'publish',
-            topic: topic,
+            topic,
             data: payload
           });
           reject(err);
@@ -241,9 +241,9 @@ class Client {
         } else {
           log.info({
             eventType: 'publish',
-            topic: topic,
+            topic,
             data: payload,
-            opts: opts
+            opts
           });
           resolve();
         }
@@ -256,8 +256,8 @@ class Client {
       if (topic === '' || topic === null) {
         log.error({
           eventType: 'subscribe',
-          topic: topic,
-          opts: opts
+          topic,
+          opts
         });
         this.disconnect();
         throw new Error('subscriptionFailure', 'subscriptionFailure');
@@ -267,16 +267,16 @@ class Client {
         if (err) {
           log.error({
             eventType: 'subscribe',
-            topic: topic,
-            opts: opts
+            topic,
+            opts
           });
           this.disconnect();
           throw new Error('subscriptionFailure');
         } else {
           log.info({
             eventType: 'subscribe',
-            topic: topic,
-            opts: opts
+            topic,
+            opts
           });
           resolve();
         }
@@ -289,8 +289,8 @@ class Client {
       if (topic === '' || topic === null) {
         log.error({
           eventType: 'unsubscribe',
-          topic: topic,
-          opts: opts
+          topic,
+          opts
         });
         this.disconnect();
         throw new Error('unsubscribeFailure', 'unsubscribeFailure');
@@ -299,15 +299,15 @@ class Client {
         if (err) {
           log.error({
             eventType: 'unsubscribe',
-            topic: topic,
-            opts: opts
+            topic,
+            opts
           });
           throw new Error('unsubscribeFailure');
         } else {
           log.info({
             eventType: 'unsubscribe',
-            topic: topic,
-            opts: opts
+            topic,
+            opts
           });
           resolve();
         }
