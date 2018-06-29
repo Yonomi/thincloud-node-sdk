@@ -207,7 +207,7 @@ class Client {
   get relatedDevices() {
     return {
       sync: () => {
-        this.relatedDeviceManager.load()
+        return this.relatedDeviceManager.load()
           .then(relatedDevices => {
             relatedDevices.forEach((relatedDevice) => {
               this.relatedDevicesMap[relatedDevice.deviceId] = relatedDevice;
