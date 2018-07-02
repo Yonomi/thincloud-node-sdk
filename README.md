@@ -112,3 +112,62 @@ Add a listener for request
 ```
 client.eventSource.on('requests', function (err, res))
 ```
+
+
+### Managing Child/Related Devices
+
+Related Device accessor
+
+```
+client.relatedDeviceMap[{deviceId}]
+```
+
+Add a Child device
+
+```
+client.relatedDevices.add({deviceId}, {deviceType}, {physicalId})
+```
+
+Remove a Child device
+
+```
+client.relatedDevices.remove({deviceId}, {deviceType}, {physicalId})
+```
+
+Update Related Device State (publish)
+
+```
+client.relatedDevicesMap[{deviceId}].request.publish({method}, {params})
+```
+
+Update Related Device State (RPC)
+
+```
+client.relatedDevicesMap[{deviceId}].request.rpc({method}, {params})
+```
+
+Related Device Management
+
+Get Related devices from cloud
+
+```
+client.relatedDeviceManager.getRelatedDevices()
+```
+
+Get Related device Ids from cloud
+
+```
+client.relatedDeviceManager.getRelatedDeviceIds()
+```
+
+Get Related device
+
+```
+client.relatedDeviceManager.getRelatedDevice({Id})
+```
+
+Related Device Synchronization
+ 
+```
+client.relatedDevices.sync()
+```
