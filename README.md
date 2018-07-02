@@ -137,13 +137,13 @@ client.relatedDevices.remove({deviceId}, {deviceType}, {physicalId})
 Update Related Device State (publish)
 
 ```
-client.relatedDeivcesMap[{deviceId}].request.publish({method}, {params})
+client.relatedDevicesMap[{deviceId}].request.publish({method}, {params})
 ```
 
 Update Related Device State (RPC)
 
 ```
-client.relatedDeivcesMap[{deviceId}].request.rpc({method}, {params})
+client.relatedDevicesMap[{deviceId}].request.rpc({method}, {params})
 ```
 
 Related Device Management
