@@ -21,7 +21,7 @@ class RelatedDevice {
         return new RequestManager(
           new RequestTopic(this.deviceId, request.id),
           request,
-          this
+          this._parent
         ).publish();
       },
       rpc: (method, params, duration) => {
@@ -29,7 +29,7 @@ class RelatedDevice {
         return new RequestManager(
           new RequestTopic(this.deviceId, request.id),
           request,
-          this,
+          this._parent,
           duration || 30000
         ).rpc();
       }
