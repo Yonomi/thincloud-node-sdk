@@ -62,7 +62,7 @@ class MessageProcessor {
       _topic.action === Constants.Topic.DEVICE_COMMAND
     ) {
       try {
-        let command = new Command(json, this._client);
+        let command = new Command(json, _topic, this._client);
         log.info({
           eventType: 'emit',
           listener: Constants.DeviceEvents.DEVICE_COMMAND,
