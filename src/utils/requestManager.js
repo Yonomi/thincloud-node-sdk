@@ -19,7 +19,7 @@ class Manager {
   publish() {
     return new Promise((resolve, reject) => {
       this._eventsource.publish(
-        new RequestTopic(this._client.deviceId).request,
+        new RequestTopic(this.topic.deviceId).request,
         this.request.toString(),
         err => {
           if (err) reject(err);
