@@ -66,7 +66,7 @@ class RelatedDevice {
   decommission(opts){
     if(!opts) opts = {};
     let _method = 'decommission';
-    if(opts.purge) _method.concat("?purge=true");
+    if(opts.purge) _method = _method.concat("?purge=true");
 
     const request = new Request(_method, [
       {
