@@ -63,8 +63,12 @@ class RelatedDevice {
       )
   }
 
-  decommission(){
-    const request = new Request('decommission?force=true', [
+  decommission(opts){
+    if(!opts) opts = {};
+    let _method = 'decommission';
+    if(opts.purge) _method.concat("?purge=true");
+
+    const request = new Request(_method, [
       {
         data: this.toJSON()
       }
