@@ -193,9 +193,9 @@ class Client {
             return device;
           })
       },
-      remove: (deviceId, deviceType, physicalId) => {
+      remove: (deviceId, deviceType, physicalId, opts) => {
         let relatedDevice = new Utils.RelatedDevice(this, deviceId, deviceType, physicalId);
-        return relatedDevice.decommission()
+        return relatedDevice.decommission(opts)
           .then((device) => {
             delete this.relatedDevicesMap[device.deviceId];
             return device;
