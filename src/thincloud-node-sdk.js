@@ -102,6 +102,10 @@ class Client {
             this.relatedDevices.sync();
           }
 
+          if(this.isCommissioned && this.deviceId){
+            this.subscribe(new CommandTopic(this.deviceId).request);
+          }
+
           opts.autoCommission ? this.commission(resolve, reject) : resolve();
 
         });
