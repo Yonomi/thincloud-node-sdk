@@ -193,7 +193,8 @@ class Client {
         let relatedDevice = new Utils.RelatedDevice(this, deviceId, deviceType, physicalId);
         return relatedDevice.commission()
           .then((device) => {
-            return this.relatedDevices.sync();
+            this.relatedDevice.sync();
+            return device;
           })
       },
       remove: (deviceId, deviceType, physicalId, opts) => {
