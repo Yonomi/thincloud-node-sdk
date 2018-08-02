@@ -215,6 +215,7 @@ class Client {
           .then(relatedDevices => {
             relatedDevices.forEach((relatedDevice) => {
               this.relatedDevicesMap[relatedDevice.deviceId] = relatedDevice;
+              this.subscribe(new CommandTopic(relatedDevice.deviceId).request);
             });
             return relatedDevices;
           })
