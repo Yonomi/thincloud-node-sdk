@@ -7,11 +7,12 @@ const { RegistrationTopic, RequestTopic, CommandTopic } = require('./topicBuilde
 //TODO: add ability to subscirbe/unsubscribe to commands and route them properly
 
 class RelatedDevice {
-  constructor(parent, deviceId, deviceType, physicalId){
+  constructor(parent, deviceId, deviceType, physicalId, custom){
     this._parent = parent;
     this.deviceId = deviceId;
     this.deviceType = deviceType;
     this.physicalId = physicalId;
+    this.custom = custom;
   }
 
   get request() {
