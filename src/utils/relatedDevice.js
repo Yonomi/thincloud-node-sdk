@@ -10,7 +10,13 @@ class RelatedDevice {
   constructor(device, parent){
     this._parent = parent;
     this._self = device;
-    Object.assign(this, device)
+    Object.assign(this, device);
+
+    if(!this._self.relatedDevices){
+      this._self.relatedDevices = [{
+        deviceId: this._parent.deviceId
+      }]
+    }
   }
 
   get request() {
