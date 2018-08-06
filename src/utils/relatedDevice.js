@@ -10,13 +10,14 @@ class RelatedDevice {
   constructor(device, parent){
     this._parent = parent;
     this._self = device;
-    Object.assign(this, this._self);
 
     if(!this._self.relatedDevices){
       this._self.relatedDevices = [{
         deviceId: this._parent.deviceId
       }]
     }
+
+    Object.assign(this, this._self);
   }
 
   get request() {
@@ -43,10 +44,9 @@ class RelatedDevice {
 
   update(data){
     return this.request.rpc('put', [{custom: data}])
-      .then(response => this.request.rpc('get', [{}]))
       .then(response => {
         this._self = response.result.body;
-        this._sync();
+        Object.assign(this, this._self);
       })
   }
 
@@ -80,7 +80,7 @@ class RelatedDevice {
       .then(
         data => {
           this._self.deviceId = data.result.deviceId;
-          this._sync();
+          Object.assign(this, this._self);
           this._parent.subscribe(new CommandTopic(this.deviceId).request);
           return this.toJSON();
         }
@@ -116,8 +116,13 @@ class RelatedDevice {
       );
   }
 
-  _sync(){
-    Object.assign(this, this._self);
+  sync(){
+    let _this = this;
+    return this.request.rpc('get', [{}])
+     .then(response => {
+       let device = response.result.body;
+       Object.assign(_this, device);
+     })
   }
 
   toJSON(){
