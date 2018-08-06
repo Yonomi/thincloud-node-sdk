@@ -41,6 +41,10 @@ class RelatedDevice {
     };
   }
 
+  update(data){
+    return this.request.rpc('put', [{custom: data}])
+  }
+
   commission(opts){
     if(!opts) opts = {};
     const commissionRequest = new Request('commission', [
@@ -62,12 +66,21 @@ class RelatedDevice {
       .rpc()
       .then(
         data => {
+          if(this.custom){
+            this.update(this.custom);
+            return data;
+          } else return data;
+        }
+      )
+      .then(
+        data => {
           this._self.deviceId = data.result.deviceId;
           this.deviceId = data.result.deviceId;
           this._parent.subscribe(new CommandTopic(this.deviceId).request);
           return this.toJSON();
         }
       )
+
   }
 
   decommission(opts){
