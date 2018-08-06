@@ -60,10 +60,6 @@ class Client {
     this._isConnected = val;
   }
 
-  get relatedDeviceManager() {
-    return new RelatedDevices(this);
-  }
-
   getCommissionTimeout() {
     return !this.config.timeoutCommission ?
       Utils.Constants.defaults.timeout :
@@ -190,7 +186,7 @@ class Client {
   get relatedDevice() {
     return {
       add: (deviceId, deviceType, physicalId) => {
-        let relatedDevice = new Utils.RelatedDevice(this, deviceId, deviceType, physicalId);
+        let relatedDevice = new Utils.RelatedDevice({deviceId, deviceType, physicalId}, this);
         return relatedDevice.commission()
           .then((device) => {
             this.relatedDevices.sync();
@@ -198,7 +194,7 @@ class Client {
           })
       },
       remove: (deviceId, deviceType, physicalId, opts) => {
-        let relatedDevice = new Utils.RelatedDevice(this, deviceId, deviceType, physicalId);
+        let relatedDevice = new Utils.RelatedDevice({deviceId, deviceType, physicalId}, this);
         return relatedDevice.decommission(opts)
           .then((device) => {
             delete this.relatedDevicesMap[device.deviceId];
@@ -210,12 +206,28 @@ class Client {
 
   get relatedDevices() {
     return {
+      add: (device, opts) => {
+        let relatedDevice = new Utils.RelatedDevice(device, this);
+        return relatedDevice.commission(opts)
+          .then((device) => {
+            this.relatedDevicesMap[device.deviceId] = relatedDevice;
+            return device
+          })
+      },
+      remove: (device, opts) => {
+        let relatedDevice = new Utils.RelatedDevice(device, this);
+        return relatedDevice.decommission(opts)
+          .then((device) => {
+            delete this.relatedDevicesMap[device.deviceId];
+            return device
+          })
+      },
       sync: () => {
-        return this.relatedDeviceManager.load()
+        return new RelatedDevices(this).load()
           .then(relatedDevices => {
-            relatedDevices.forEach((relatedDevice) => {
-              this.relatedDevicesMap[relatedDevice.deviceId] = relatedDevice;
-              this.subscribe(new CommandTopic(relatedDevice.deviceId).request);
+            relatedDevices.forEach((device) => {
+              this.relatedDevicesMap[device.deviceId] = new Utils.RelatedDevice(device, this);
+              this.subscribe(new CommandTopic(device.deviceId).request);
             });
             return relatedDevices;
           })

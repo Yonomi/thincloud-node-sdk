@@ -7,12 +7,10 @@ const { RegistrationTopic, RequestTopic, CommandTopic } = require('./topicBuilde
 //TODO: add ability to subscirbe/unsubscribe to commands and route them properly
 
 class RelatedDevice {
-  constructor(parent, deviceId, deviceType, physicalId, custom){
+  constructor(device, parent){
     this._parent = parent;
-    this.deviceId = deviceId;
-    this.deviceType = deviceType;
-    this.physicalId = physicalId;
-    this.custom = custom;
+    this._self = device;
+    Object.assign(this, device)
   }
 
   get request() {
@@ -37,7 +35,8 @@ class RelatedDevice {
     };
   }
 
-  commission(){
+  commission(opts){
+    if(!opts) opts = {};
     const commissionRequest = new Request('commission', [
       {
         data: this.toJSON()
@@ -59,7 +58,6 @@ class RelatedDevice {
         data => {
           this.deviceId = data.result.deviceId;
           this._parent.subscribe(new CommandTopic(this.deviceId).request);
-          return this.toJSON();
         }
       )
   }
@@ -93,14 +91,7 @@ class RelatedDevice {
   }
 
   toJSON(){
-    return {
-      deviceId: this.deviceId,
-      deviceType: this.deviceType,
-      physicalId: this.physicalId,
-      relatedDevices: [{
-        deviceId: this._parent.deviceId
-      }]
-    }
+    return this._self;
   }
 
 
