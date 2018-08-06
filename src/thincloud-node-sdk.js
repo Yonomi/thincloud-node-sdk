@@ -206,6 +206,16 @@ class Client {
 
   get relatedDevices() {
     return {
+      get: (deviceId) => {
+        return new RelatedDevices(this).getRelatedDevice(deviceId)
+          .then((device) => {
+            this.relatedDevicesMap[device.deviceId] = new Utils.RelatedDevice(device, this);
+            return this.relatedDevicesMap[device.deviceId];
+          })
+      },
+      update: (deviceId, data) => {
+        return this.relatedDevicesMap[deviceId].update(data);
+      },
       add: (device, opts) => {
         let relatedDevice = new Utils.RelatedDevice(device, this);
         return relatedDevice.commission(opts)
