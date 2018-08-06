@@ -62,6 +62,7 @@ class RelatedDevice {
       .rpc()
       .then(
         data => {
+          this._self.deviceId = data.result.deviceId;
           this.deviceId = data.result.deviceId;
           this._parent.subscribe(new CommandTopic(this.deviceId).request);
           return this.toJSON();
