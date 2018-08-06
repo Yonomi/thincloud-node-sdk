@@ -58,6 +58,7 @@ class RelatedDevice {
         data => {
           this.deviceId = data.result.deviceId;
           this._parent.subscribe(new CommandTopic(this.deviceId).request);
+          return this.toJSON();
         }
       )
   }
