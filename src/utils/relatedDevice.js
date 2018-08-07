@@ -47,6 +47,7 @@ class RelatedDevice {
       .then(response => {
         this._self = response.result.body;
         Object.assign(this, this._self);
+        return response;
       })
   }
 
@@ -71,21 +72,20 @@ class RelatedDevice {
       .rpc()
       .then(
         data => {
-          if(this.custom){
-            this.update(this.custom);
-            return data;
-          } else return data;
-        }
-      )
-      .then(
-        data => {
           this._self.deviceId = data.result.deviceId;
           Object.assign(this, this._self);
           this._parent.subscribe(new CommandTopic(this.deviceId).request);
           return this.toJSON();
         }
       )
-
+      .then(
+        data => {
+          if(this.custom){
+            this.update(this.custom);
+            return data;
+          } else return data;
+        }
+      )
   }
 
   decommission(opts){
