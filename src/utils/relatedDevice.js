@@ -51,8 +51,7 @@ class RelatedDevice {
       })
   }
 
-  commission(opts){
-    if(!opts) opts = {};
+  commission(opts = {}){
     const commissionRequest = new Request('commission', [
       {
         data: this.toJSON()
