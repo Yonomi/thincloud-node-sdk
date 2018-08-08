@@ -28,8 +28,7 @@ class RelatedDevices {
     )
       .rpc()
       .then(response => {
-        let device = response.result.body;
-        return new Utils.RelatedDevice(this.client, device.deviceId, device.deviceType, device.physicalId);
+        return response.result.body;
       })
   }
 

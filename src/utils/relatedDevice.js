@@ -7,11 +7,17 @@ const { RegistrationTopic, RequestTopic, CommandTopic } = require('./topicBuilde
 //TODO: add ability to subscirbe/unsubscribe to commands and route them properly
 
 class RelatedDevice {
-  constructor(parent, deviceId, deviceType, physicalId){
+  constructor(device, parent){
     this._parent = parent;
-    this.deviceId = deviceId;
-    this.deviceType = deviceType;
-    this.physicalId = physicalId;
+    this._self = device;
+
+    if(!this._self.relatedDevices){
+      this._self.relatedDevices = [{
+        deviceId: this._parent.deviceId
+      }]
+    }
+
+    Object.assign(this, this._self);
   }
 
   get request() {
@@ -36,7 +42,16 @@ class RelatedDevice {
     };
   }
 
-  commission(){
+  update(data){
+    return this.request.rpc('put', [{custom: data}])
+      .then(response => {
+        this._self = response.result.body;
+        Object.assign(this, this._self);
+        return response;
+      })
+  }
+
+  commission(opts = {}){
     const commissionRequest = new Request('commission', [
       {
         data: this.toJSON()
@@ -56,15 +71,23 @@ class RelatedDevice {
       .rpc()
       .then(
         data => {
-          this.deviceId = data.result.deviceId;
+          this._self.deviceId = data.result.deviceId;
+          Object.assign(this, this._self);
           this._parent.subscribe(new CommandTopic(this.deviceId).request);
           return this.toJSON();
         }
       )
+      .then(
+        data => {
+          if(this.custom){
+            this.update(this.custom);
+            return data;
+          } else return data;
+        }
+      )
   }
 
-  decommission(opts){
-    if(!opts) opts = {};
+  decommission(opts = {}){
     let _method = 'decommission';
     if(opts.purge) _method = _method.concat("?purge=true");
 
@@ -91,15 +114,16 @@ class RelatedDevice {
       );
   }
 
+  sync(){
+    return this.request.rpc('get', [{}])
+     .then(response => {
+       let device = response.result.body;
+       Object.assign(this, device);
+     })
+  }
+
   toJSON(){
-    return {
-      deviceId: this.deviceId,
-      deviceType: this.deviceType,
-      physicalId: this.physicalId,
-      relatedDevices: [{
-        deviceId: this._parent.deviceId
-      }]
-    }
+    return this._self;
   }
 
 
