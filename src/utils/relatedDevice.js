@@ -116,11 +116,10 @@ class RelatedDevice {
   }
 
   sync(){
-    let _this = this;
     return this.request.rpc('get', [{}])
      .then(response => {
        let device = response.result.body;
-       Object.assign(_this, device);
+       Object.assign(this, device);
      })
   }
 
