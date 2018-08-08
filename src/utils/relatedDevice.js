@@ -88,8 +88,7 @@ class RelatedDevice {
       )
   }
 
-  decommission(opts){
-    if(!opts) opts = {};
+  decommission(opts = {}){
     let _method = 'decommission';
     if(opts.purge) _method = _method.concat("?purge=true");
 
