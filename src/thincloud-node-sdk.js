@@ -210,7 +210,7 @@ class Client {
         return new RelatedDevices(this).getRelatedDevice(deviceId)
           .then((device) => {
             this.relatedDevicesMap[device.deviceId] = new Utils.RelatedDevice(device, this);
-            return this.relatedDevicesMap[device.deviceId];
+            return device;
           })
       },
       update: (deviceId, data) => {
