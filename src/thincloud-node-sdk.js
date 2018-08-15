@@ -102,7 +102,7 @@ class Client {
             this.subscribe(new CommandTopic(this.deviceId).request);
           }
 
-          opts.autoCommission ? this.commission(resolve, reject) : resolve();
+          opts.autoCommission ? this.commission().then(resolve, reject) : resolve();
 
         });
 
