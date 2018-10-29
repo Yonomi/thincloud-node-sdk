@@ -5,6 +5,10 @@
   "author": "Yonomi (http://yonomi.co)",
   "license": "SEE LICENSE IN LICENSE",
   "main": "src/thincloud-node-sdk.js",
+  "engines": {
+    "node": ">= 8.11.x",
+    "npm": ">= 5.6.x"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/yonomi/thincloud-node-sdk.git"
