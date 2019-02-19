@@ -26,7 +26,7 @@ class Command {
   }
 
   error(payload) {
-    let message = new Message(this.id, { body: payload }, 'error', 400);
+    let message = new Message(this.id, { message: payload }, 'error', 400);
     return this._client.publish(this.topic.response, message.toString());
   }
 
